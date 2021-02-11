@@ -1,0 +1,38 @@
+body
+{
+	font-size: 14px;
+	font-family: "Century Gothic J","Open Sans",  Helvetica, verdana,sans-serif; /*"Comfortaa Light", */
+	font-weight:300;
+	color: #4b4b4b;
+	line-height:1.6em;
+}
+table
+{
+	font-family: "Century Gothic J","Open Sans",  Helvetica,verdana, sans-serif; /*"Comfortaa Regular", */
+	font-size: 13px;
+}
+@font-face {
+    src: url("../fonts/GOTHIC.TTF");
+    font-family: "Century Gothic J";
+	font-weight: 400;
+}
+@font-face {
+    src: url("../fonts/GOTHICB.TTF");
+    font-family: "Century Gothic J";
+	font-weight: 700;
+}
+@font-face {
+    src: url("../fonts/Comfortaa-Bold.ttf");
+    font-family: "Comfortaa Bold";
+	font-weight: 700;
+}
+@font-face {
+    src: url("../fonts/Comfortaa-Light.ttf");
+    font-family: "Comfortaa Light";
+	font-weight: 300;
+}
+@font-face {
+    src: url("../fonts/Comfortaa-Regular.ttf");
+    font-family: "Comfortaa Regular";
+	font-weight: 400;
+}

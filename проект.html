@@ -1,0 +1,359 @@
+<html>
+
+<head>
+<script src="https://drive.google.com/file/d/0B77Wsm4nlU6QUDljVkF5emJSU3c/view?usp=sharing"></script>
+<link href="css/style.css" rel="stylesheet">
+<title>Оценка уровня физического здоровья</title>
+</head>
+<body>
+
+
+<img src="Безымянный.png" align="right" width="20%">
+<h1><font color="blue"> <div align="center">Экспресс-оценка уровня физического здоровья 
+(по Г.Л. Апанасенко)</div></font></h1>
+<br>
+<h3>Для того, чтоб вычислить свой уровень Здоровья, необходимо замерить всего несколько показателей своего организма.<br> 
+А именно:<br>
+<div style="padding-left:50px;">
+1. Массу тела (кг).<br>
+2. Рост (м).<br>
+3. Артериальное давление систолическое ("верхнее"). <br>
+4. ЖЕЛ - жизненную емкость легких (мл). <br>
+5. Силу (динамометрию) кисти (кг). <br>
+6. ЧСС - частоту сердечных сокращений (пульс). <br>
+7. Время (в минутах) восстановления пульса после стандартизированной нагрузки (20 приседаний за 30 секунд). </div><br> 
+<p align="center"><strong><font color="blue">Вычислить УРОВЕНЬ СВОЕГО ЗДОРОВЬЯ (по Апанасенко)</font></strong></p><br> 
+</h3>
+<script>
+function getRadioResult(name)
+{
+	var radios = document.getElementsByTagName('input');
+	var value;
+	for (var i = 0; i < radios.length; i++) {
+		if (radios[i].type === 'radio' && radios[i].checked && radios[i].name === name) {
+			value = radios[i].getAttribute('value');
+		}
+	}
+	return value;
+}
+
+var RoundPrec = [
+	1, 10, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12,
+	1e13, 1e14, 1e15, 1e16, 1e17, 1e18, 1e19
+];
+
+function roundNumber( num, prec )
+{
+	if( !prec ) {
+		return Math.floor( num + 0.5 );
+	}
+	else if( prec < 0 ) {
+		var div = prec * -10;
+		return Math.floor( num / div + 0.5 ) * div;
+	}
+	else {
+		if( prec >= RoundPrec.length )
+			prec = RoundPrec.length - 1;
+		return Math.floor( num * RoundPrec[prec] + 0.5 ) / RoundPrec[prec];
+	}
+}
+
+function validate(evt) {
+  var theEvent = evt || window.event;
+  var key = theEvent.keyCode || theEvent.which;
+  // if enter key - just return;
+  if(13 === key)
+  {
+	return;
+  }
+  key = String.fromCharCode( key );
+  var regex = /[0-9]|\.|\,/;
+  if( !regex.test(key) ) {
+    theEvent.returnValue = false;
+    if(theEvent.preventDefault) theEvent.preventDefault();
+  }
+}
+
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function validateAndShowError(id) {
+  if( !isNumber(document.getElementById(id).value) ) {
+    alert('Неверно введено значение в поле ' + document.getElementById(id).name + '.');
+	return false;
+  }
+  return true;
+}
+
+function getNumber(id) {
+  return parseFloat(document.getElementById(id).value);
+}
+
+function calculate()
+{
+	if (!validateAndShowError('ves') || !validateAndShowError('rost')
+	|| !validateAndShowError('davlenie') || !validateAndShowError('emkost')
+	|| !validateAndShowError('syla') || !validateAndShowError('chss')
+	|| !validateAndShowError('vosstanovlenie_pulsa'))
+	{
+		return false;
+	}
+	var ves = getNumber('ves');
+	var rost = getNumber('rost');
+	var davlenie = getNumber('davlenie');
+	var emkost = getNumber('emkost');
+	var syla = getNumber('syla');
+	var chss = getNumber('chss');
+	var vosstanovlenie_pulsa = getNumber('vosstanovlenie_pulsa');
+
+	if(ves < 20 || ves > 150)
+	{
+		alert('Введите верное значение веса. Оно должно быть в кг и быть больше 20 и меньше 150.');
+		return false;
+	}
+	if(vosstanovlenie_pulsa < 0)
+	{
+		alert('Введите верное значение времени восстановления пульса. Оно должно быть в секундах и быть больше 0.');
+		return false;
+	}
+	if(syla < 0 || syla > 100)
+	{
+		alert('Введите верное значение силы кисти. Оно должно быть в кг между 0 и 100.');
+		return false;
+	}
+	if(chss < 40 || chss > 150)
+	{
+		alert('Введите верное значение ЧСС. Оно должно быть в ударах за 1 минуту и быть между 40 и 250.');
+		return false;
+	}
+	if(rost < 20 || rost > 250)
+	{
+		alert('Введите ваш парвильный рост. Он должен быть между 20 и 250 см.');
+		return false;
+	}
+	if(emkost < 1000 || emkost > 7000)
+	{
+		alert('Введите верное значение емкости легких. Оно должно быть между 1000 и 7000 мл.');
+		return false;
+	}
+	// pokazateli:
+	var pok1 = ves / (rost / 100 * rost / 100);
+	var pok2 = emkost / ves;
+	var pok3 = syla * 100 / ves;
+	var pok4 = chss * davlenie / 100;
+	var pok5 = vosstanovlenie_pulsa;
+
+	var res1 = 0;
+	var res2 = 0;
+	var res3 = 0;
+	var res4 = 0;
+	var res5 = 0;
+
+	var sex = getRadioResult('пол');
+	if(sex === "male")
+	{
+		// ok. Посчитаем по мужским ниже. (отличающиеся - здесь)
+		switch (true) {
+			case (pok3 <= 60): 				res3 = -1; break;
+			case (pok3 > 60 && pok3 <= 65): res3 = 0; break;
+			case (pok3 > 65 && pok3 <= 70): res3 = 1; break;
+			case (pok3 > 70 && pok3 <= 80): res3 = 2; break;
+			case (pok3 > 80): 				res3 = 3; break;
+			default: alert("Ой! Неверное вычисленное значение. Попробуйте самостоятельно вычислить."); return false;
+		}
+
+	}
+	else if(sex === "female")
+	{
+		// В описанных мужских формулах - нужны корректировки, но балы одинаковы.
+		pok1 = pok1 + 2;
+		pok2 = pok2 + 10;
+		switch (true) {
+			case (pok3 <= 40): 				res3 = -1; break;
+			case (pok3 > 40 && pok3 <= 50): res3 = 0; break;
+			case (pok3 > 50 && pok3 <= 55): res3 = 1; break;
+			case (pok3 > 55 && pok3 <= 60): res3 = 2; break;
+			case (pok3 > 60): 				res3 = 3; break;
+			default: alert("Ой! Неверное вычисленное значение. Попробуйте самостоятельно вычислить."); return false;
+		}
+	}
+	else
+	{
+		alert('Вы мужчина или женщина?');
+		return false;
+	}
+
+	// показатель откорректирован сверху
+	switch (true) {
+		case (pok1 <= 19): 		res1 = -2; break;
+		case (pok1 > 19 && pok1 <= 20): res1 = -1; break;
+		case (pok1 > 20 && pok1 <= 25): res1 = 0; break;
+		case (pok1 > 25 && pok1 <= 28): res1 = -1; break;
+		case (pok1 > 28): 		res1 = -2; break;
+		default: alert("Ой! Неверное вычисленное значение. Попробуйте самостоятельно вычислить."); return false;
+	}
+
+	// показатель откорректирован сверху
+	switch (true) {
+		case (pok2 <= 50): 		res2 = -1; break;
+		case (pok2 > 50 && pok2 <= 55): res2 = 0; break;
+		case (pok2 > 55 && pok2 <= 60): res2 = 1; break;
+		case (pok2 > 60 && pok2 <= 65): res2 = 2; break;
+		case (pok2 > 65): 		res2 = 3; break;
+		default: alert("Ой! Неверное вычисленное значение. Попробуйте самостоятельно вычислить."); return false;
+	}
+
+	// показатель одинаков для обоих полов
+	switch (true) {
+		case (pok4 <= 70): 		res4 = 5; break;
+		case (pok4 > 70 && pok4 <= 85): res4 = 3; break;
+		case (pok4 > 85 && pok4 <= 95): res4 = 0; break;
+		case (pok4 > 95 && pok4 <= 110): res4 = -1; break;
+		case (pok4 > 110): 		res4 = -2; break;
+		default: alert("Ой! Неверное вычисленное значение. Попробуйте самостоятельно вычислить."); return false;
+	}
+
+	switch (true) {
+		case (pok5 <= 60): 		res5 = 7; break;
+		case (pok5 > 60 && pok5 <= 90): res5 = 5; break;
+		case (pok5 > 90 && pok5 <= 120): res5 = 3; break;
+		case (pok5 > 120 && pok5 <= 180): res5 = 1; break;
+		case (pok5 > 180): 		res5 = -2; break;
+		default: alert("Ой! Неверное вычисленное значение. Попробуйте самостоятельно вычислить."); return false;
+	}
+
+	var res = res1 + res2 + res3 + res4 + res5;
+	var text = "";
+	// показатель одинаков для обоих полов
+	switch (true) {
+		case (res <= 3): 		text = "низкий"; break;
+		case (res > 3 && res <= 6): 	text = "ниже среднего"; break;
+		case (res > 6 && res <= 11): 	text = "средний"; break;
+		case (res > 11 && res <= 15): 	text = "выше среднего"; break;
+		case (res > 15): 		text = "высокий"; break;
+		default: alert("Ой! Неверное вычисленное значение. Попробуйте самостоятельно вычислить."); return false;
+	}
+
+	var resultText = "Ваш уровень здоровья: <span style='color:red;font-weight:bold;'>" + text + ".</span></br> Результат: ";
+	resultText = resultText + res1 + " + " + res2 + " + " + res3 + " + " + res4 + " + " + res5 + " = " + res;
+	document.getElementById('result').innerHTML = resultText;
+	return false;
+}
+</script>
+<form name="calculations" action="http://www.xn--b1adef0ban2h.com.ua/asdf" onsubmit="return calculate();">
+<table style="width:100%;" cellspacing="15">
+	<tbody><tr>
+		<td colspan="2" style="width:50%">
+			<b>Введите Ваши данные:</b>
+		</td>
+		<td colspan="2">
+			<b>Результат:</b>
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align:right;">
+			Ваш рост <br>(cм):
+		</td>
+		<td>
+			<input id="rost" name="рост" type="text" onkeypress="validate(event)">
+		</td>
+		<td rowspan="2" style="align:center;">
+			<input onclick="return calculate();" type="image" src="ok.jpg
+">
+		</td>
+		<td id="result" rowspan="4" style="vertical-align:top;">
+			Введите данные и нажмите кнопку подсчета.
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align:right;">
+			Ваш вес <br>(кг):
+		</td>
+		<td>
+			<input id="ves" name="вес" type="text" onkeypress="validate(event)">
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align:right;">
+			Артериальное давление<br> систолическое ("верхнее"):
+		</td>
+		<td>
+			<input id="davlenie" name="давление" type="text" onkeypress="validate(event)">
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align:right;">
+			Жизненная емкость легких<br>(ЖЕЛ) (в мл):
+		</td>
+		<td>
+			<input id="emkost" name="емкость легких" type="text" onkeypress="validate(event)">
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align:right;">
+			 Сила кисти (динамометрия)<br>(кг):
+		</td>
+		<td>
+			<input id="syla" name="сила кисти" type="text" onkeypress="validate(event)">
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align:right;">
+			Частота сердечных <br>сокращений (пульс за 1 мин):
+		</td>
+		<td style="vertical-align:top;">
+			<input id="chss" name="частота сердечных сокращений" type="text" onkeypress="validate(event)">
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align:right;">
+			Время восстановления пульса<br>(в секундах):
+		</td>
+		<td style="vertical-align:top;">
+			<input id="vosstanovlenie_pulsa" name="время восстановления пульса" type="text" onkeypress="validate(event)">
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align:right;">
+			Ваш пол:
+		</td>
+		<td><table cellspacing="5">
+			<tbody><tr><td><input name="пол" type="radio" value="male" checked=""><span style="padding-left:10px;">Мужчина</span></td></tr>
+			<tr><td><input name="пол" type="radio" value="female"><span style="padding-left:10px;">Женщина</span></td></tr></tbody></table>
+		</td>
+	</tr>
+</tbody></table>
+</form>
+<br>
+Согласно приведенным ниже таблицам Вы самостоятельно можете вычислить свой уровень Здоровья: по каждому показателю получить балл и просуммировать по всем показателям.<br>
+
+Кроме того, Вы можете проанализировать низкие баллы в полученном расчете результата и понять, <strong>какой параметр работы Вашего организма ухудшает резервы Вашего Здоровья.</strong><br>
+
+<font color="blue"><strong>Для мужчин</strong></font><br>
+<table border="1" cellspacing="0" width="100%" bordercolor="#DADADA">
+<tbody><tr bgcolor="#e6e6e6"><td width="25%" style="padding:5px;"><p align="center"><b>Показатели</b></p></td><td colspan="5" style="padding:5px;"><p align="center"><b>Баллы</b></p></td></tr>
+<tr><td style="padding:5px;"><p align="center">Масса тела (кг)</p><hr><p align="center">рост<sup>2</sup> (м)</p></td><td style="padding:5px;"><p align="center">18,9 и менее<br><b>-2 балла</b></p></td><td style="padding:5px;"><p align="center">19.0 - 20.0<br><b>-1 балл</b></p></td><td style="padding:5px;"><p align="center">20.1 - 25.0<br><b>0 баллов</b></p></td><td style="padding:5px;"><p align="center">25.1 - 28.0<br><b>-1 балл</b></p></td><td style="padding:5px;"><p align="center">28.1 и более<br><b>-2 балла</b></p></td></tr>
+<tr><td style="padding:5px;"><p align="center">ЖЕЛ (мл)</p><hr><p align="center">масса тела (кг)</p></td><td style="padding:5px;"><p align="center">50 и менее<br><b>-1 балл</b></p></td><td style="padding:5px;"><p align="center">51 - 55<br><b>0 баллов</b></p></td><td style="padding:5px;"><p align="center">56 - 60<br><b>1 балл</b></p></td><td style="padding:5px;"><p align="center">61 - 65<br><b>2 балла</b></p></td><td style="padding:5px;"><p align="center">66 и более<br><b>3 балла</b></p></td></tr>
+<tr><td style="padding:5px;"><p align="center">ДМК (кг) х 100</p><hr><p align="center">масса тела (кг)</p></td><td style="padding:5px;"><p align="center">60 и менее<br><b>-1 балл</b></p></td><td style="padding:5px;"><p align="center">61 - 65<br><b>0 баллов</b></p></td><td style="padding:5px;"><p align="center">66 - 70<br><b>1 балл</b></p></td><td style="padding:5px;"><p align="center">71 - 80<br><b>2 балла</b></p></td><td style="padding:5px;"><p align="center">81 и более<br><b>3 балла</b></p></td></tr>
+<tr><td style="padding:5px;"><p align="center">ЧСС х АДсист</p><hr><p align="center">100</p></td><td style="padding:5px;"><p align="center">111 и более<br><b>-2 балла</b></p></td><td style="padding:5px;"><p align="center">95 - 110<br><b>-1 балл</b></p></td><td style="padding:5px;"><p align="center">85 - 94<br><b>0 баллов</b></p></td><td style="padding:5px;"><p align="center">70 - 84<br><b>3 балла</b></p></td><td style="padding:5px;"><p align="center">69 и менее<br><b>5 баллов</b></p></td></tr>
+<tr><td style="padding:5px;"><p align="center">Время (мин.) восстан. ЧСС после 20 прис. за 30 сек.</p></td><td style="padding:5px;"><p align="center">3 и более<br><b>-2 балла</b></p></td><td style="padding:5px;"><p align="center">2 - 3<br><b>1 балл</b></p></td><td style="padding:5px;"><p align="center">1.30 - 1.59<br><b>3 балла</b></p></td><td style="padding:5px;"><p align="center">1.00 - 1.29<br><b>5 баллов</b></p></td><td style="padding:5px;"><p align="center">0.59 и менее<br><b>7 баллов</b></p></td></tr>
+</tbody></table><br>
+<font color="blue"><strong>Для женщин</strong></font><br>
+<table border="1" cellspacing="0" width="100%" bordercolor="#DADADA">
+<tbody><tr bgcolor="#e6e6e6"><td width="25%" style="padding:5px;"><p align="center"><b>Показатели</b></p></td><td colspan="5" style="padding:5px;"><p align="center"><b>Баллы</b></p></td></tr>
+<tr><td style="padding:5px;"><p align="center">Масса тела (кг)</p><hr><p align="center">рост<sup>2</sup> (м)</p></td><td style="padding:5px;"><p align="center">16,9 и менее<br><b>-2 балла</b></p></td><td style="padding:5px;"><p align="center">17.0 - 18.0<br><b>-1 балл</b></p></td><td style="padding:5px;"><p align="center">18.1 - 23.8<br><b>0 баллов</b></p></td><td style="padding:5px;"><p align="center">23.9 - 26.0<br><b>-1 балл</b></p></td><td style="padding:5px;"><p align="center">26.1 и более<br><b>-2 балла</b></p></td></tr>
+<tr><td style="padding:5px;"><p align="center">ЖЕЛ (мл)</p><hr><p align="center">масса тела (кг)</p></td><td style="padding:5px;"><p align="center">40 и менее<br><b>-1 балл</b></p></td><td style="padding:5px;"><p align="center">41 - 45<br><b>0 баллов</b></p></td><td style="padding:5px;"><p align="center">46 - 50<br><b>1 балл</b></p></td><td style="padding:5px;"><p align="center">51 - 55<br><b>2 балла</b></p></td><td style="padding:5px;"><p align="center">56 и более<br><b>3 балла</b></p></td></tr>
+<tr><td style="padding:5px;"><p align="center">ДМК (кг) х 100</p><hr><p align="center">масса тела (кг)</p></td><td style="padding:5px;"><p align="center">40 и менее<br><b>-1 балл</b></p></td><td style="padding:5px;"><p align="center">41 - 50<br><b>0 баллов</b></p></td><td style="padding:5px;"><p align="center">51 - 55<br><b>1 балл</b></p></td><td style="padding:5px;"><p align="center">56 - 60<br><b>2 балла</b></p></td><td style="padding:5px;"><p align="center">61 и более<br><b>3 балла</b></p></td></tr>
+<tr><td style="padding:5px;"><p align="center">ЧСС х АДсист</p><hr><p align="center">100</p></td><td style="padding:5px;"><p align="center">111 и более<br><b>-2 балла</b></p></td><td style="padding:5px;"><p align="center">95 - 110<br><b>-1 балл</b></p></td><td style="padding:5px;"><p align="center">85 - 94<br><b>0 баллов</b></p></td><td style="padding:5px;"><p align="center">70 - 84<br><b>3 балла</b></p></td><td style="padding:5px;"><p align="center">69 и менее<br><b>5 баллов</b></p></td></tr>
+<tr><td style="padding:5px;"><p align="center">Время (мин.) восстан. ЧСС после 20 прис. за 30 сек.</p></td><td style="padding:5px;"><p align="center">3 и более<br><b>-2 балла</b></p></td><td style="padding:5px;"><p align="center">2 - 3<br><b>1 балл</b></p></td><td style="padding:5px;"><p align="center">1.30 - 1.59<br><b>3 балла</b></p></td><td style="padding:5px;"><p align="center">1.00 - 1.29<br><b>5 баллов</b></p></td><td style="padding:5px;"><p align="center">0.59 и менее<br><b>7 баллов</b></p></td></tr>
+</tbody></table><br>
+<p align="center"><font color="blue"><strong>ТАБЛИЦА СООТНОШЕНИЙ ПОЛУЧЕННЫХ БАЛЛОВ УРОВНЯМ ЗДОРОВЬЯ</strong></font></p><br>
+<table border="1" cellspacing="0" width="100%" bordercolor="#DADADA">
+<tbody><tr bgcolor="#e6e6e6"><td rowspan="2" width="20%" style="padding:5px;"></td><td colspan="5" style="padding:5px;"><p align="center"><b>Уровни Здоровья</b></p></td></tr>
+<tr bgcolor="#e6e6e6"><td style="padding:5px;"><p align="center"><b>низкий</b></p></td><td style="padding:5px;"><p align="center"><b>ниже среднего</b></p></td><td style="padding:5px;"><p align="center"><b>средний</b></p></td><td style="padding:5px;"><p align="center"><b>выше среднего</b></p></td><td style="padding:5px;"><p align="center"><b>высокий</b></p></td></tr>
+<tr><td style="padding:5px;"><p align="center"><b>Общая оценка<br>уровня<br>здоровья</b></p></td><td style="padding:5px;"><br><p align="center"><b>3 и менее баллов</b></p></td><td style="padding:5px;"><br><p align="center"><b>4 - 6 баллов</b></p></td><td style="padding:5px;"><br><p align="center"><b>7 - 11 баллов</b></p></td><td style="padding:5px;"><br><p align="center"><b>12 - 15 баллов</b></p></td><td style="padding:5px;"><br><p align="center"><b>16 - 18 баллов</b></p></td></tr>
+</tbody></table><br>
+
+</body>
+</html>                                                                                                             
